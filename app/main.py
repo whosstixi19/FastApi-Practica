@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -8,6 +9,15 @@ from . import models, schemas, database, service
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Persona CRUD FastAPI")
+
+# Configurar CORS para permitir peticiones desde Angular
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],  # URL de Angular
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, PUT, DELETE)
+    allow_headers=["*"],  # Permite todos los headers
+)
 
 # Dependency to get Service
 def get_persona_service(db: Session = Depends(database.get_db)):
